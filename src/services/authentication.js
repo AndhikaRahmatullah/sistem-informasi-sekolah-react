@@ -1,9 +1,11 @@
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth"
+import { getDatabase } from "firebase/database"
 
 const firebaseConfig = {
 	apiKey: "AIzaSyAAa9EIQwz0-rotoF4bfKcvMTJ497D8NeI",
 	authDomain: "project-rapor-sisiwa.firebaseapp.com",
+	databaseURL: "https://project-rapor-sisiwa-default-rtdb.firebaseio.com",
 	projectId: "project-rapor-sisiwa",
 	storageBucket: "project-rapor-sisiwa.appspot.com",
 	messagingSenderId: "39445794004",
@@ -13,6 +15,8 @@ const firebaseConfig = {
 if (!getApps().length) {
 	initializeApp(firebaseConfig)
 }
+
+export const database = getDatabase()
 
 export const FirebaseAuth = getAuth()
 

@@ -1,16 +1,18 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import FormError from "../components/FormError";
 import { SignUp as Daftar, GetSignUpErrorMessage } from "../services/authentication";
+import useCreateDatabase from "../hooks/useCreateDatabase";
+import FormError from "../components/FormError";
+import { useForm } from "react-hook-form";
+import { capitalLetter } from "../tools/capitalLetter";
 import { SmallSpinnerLight } from "../tools/spinner";
 import { toastNotif, ToastNotifContainer } from "../tools/reactToastify";
 
 const SignUp = () => {
 	const redirect = useNavigate();
-
 	const [isLoading, setIsLoading] = useState(false);
 
+	// useForm
 	const {
 		register,
 		handleSubmit,
@@ -21,11 +23,33 @@ const SignUp = () => {
 	const password = useRef({});
 	password.current = watch("password");
 
+	// set database
+	const create = useCreateDatabase();
+	const currentTime = new Date().toLocaleString();
+
+	// additional data for database
+	const additionalData = async (username, email) => {
+		const path = "/users";
+		const value = {
+			username: capitalLetter(username),
+			nuptk: 0,
+			profileImage: "",
+			placeOfBirth: "",
+			dateOfBirth: "",
+			position: "",
+			email: email,
+			createdTime: currentTime,
+		};
+		await create.pushValue(path, value);
+	};
+
+	// submit
 	const onSubmit = async (formData) => {
 		setIsLoading(true);
-		const { email, password } = formData;
+		const { username, email, password } = formData;
 		try {
 			await Daftar(email, password);
+			await additionalData(username, email);
 			redirect("/dashboard");
 		} catch (error) {
 			const message = GetSignUpErrorMessage(error.code);
@@ -46,6 +70,19 @@ const SignUp = () => {
 			<div className="prose prose-base prose-neutral flex max-w-none flex-col items-center justify-center md:prose-lg lg:w-1/2 lg:prose-xl">
 				<h1 className="tracking-wide text-primary">Daftar Sekarang</h1>
 				<form onSubmit={handleSubmit(onSubmit)}>
+					{/* username */}
+					<div className="mb-5">
+						<label htmlFor="email">Nama Pengguna</label>
+						<input
+							type="text"
+							name="username"
+							placeholder="Masukan nama pengguna"
+							{...register("username", { required: true })}
+							className="form-input block w-72 bg-transparent md:w-[500px] lg:w-[450px]"
+						/>
+						<FormError error={errors.email} />
+					</div>
+
 					{/* email */}
 					<div className="mb-5">
 						<label htmlFor="email">Email</label>
@@ -59,8 +96,8 @@ const SignUp = () => {
 						<FormError error={errors.email} />
 					</div>
 
+					{/* password */}
 					<div className="mb-5">
-						{/* password */}
 						<label htmlFor="password">Kata Sandi</label>
 						<input
 							type="password"
@@ -72,8 +109,8 @@ const SignUp = () => {
 						<FormError error={errors.password} />
 					</div>
 
+					{/* confirm password */}
 					<div className="mb-5">
-						{/* confirm password */}
 						<label htmlFor="confirmPassword">Konfirmasi Kata Sandi</label>
 						<input
 							type="password"
@@ -85,9 +122,9 @@ const SignUp = () => {
 						<FormError error={errors.confirmPassword} />
 					</div>
 
+					{/* sk */}
 					<div className="mb-10">
 						<div className="flex items-center gap-2">
-							{/* sk */}
 							<input
 								type="checkbox"
 								name="sk"
