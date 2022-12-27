@@ -34,6 +34,7 @@ const SignUp = () => {
 			username: capitalLetter(username),
 			nuptk: 0,
 			profileImage: "",
+			address: "",
 			placeOfBirth: "",
 			dateOfBirth: "",
 			position: "",

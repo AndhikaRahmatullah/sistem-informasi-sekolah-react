@@ -1,4 +1,33 @@
+import { useRef } from "react";
+import { useUser } from "../context/user";
+import useGetDatabase from "../hooks/useGetDatabase";
+
 const Dashboard = () => {
+	// set data
+	const dashboardData = useRef({});
+
+	// get user
+	const { email } = useUser();
+
+	// get database
+	const getPosts = useGetDatabase("users", true);
+	const { values, isLoading, getValueLater, exist, error } = getPosts;
+
+	// validation user database
+	if (values) {
+		dashboardData.current = {
+			totalUsers: values.length,
+		};
+		values.map((e) => {
+			if (email === e.email) {
+				dashboardData.current = {
+					...dashboardData.current,
+					email: e.email,
+				};
+			}
+		});
+	}
+
 	return (
 		<div className="container py-10">
 			<div className="ml-[250px]">
@@ -40,16 +69,33 @@ const Dashboard = () => {
 						</a>
 					</div>
 
+					{/* data pengguna */}
+					{/* visible only to administrators */}
+					{dashboardData.current.email === "admin@school.org" && (
+						<div className="flex h-[200px] w-[370px] flex-col justify-between bg-lime-500 pt-4">
+							<p className="px-3 text-5xl font-extrabold text-light">{dashboardData.current.totalUsers}</p>
+							<p className="px-3 text-2xl font-medium text-light">Data Pengguna</p>
+							<a
+								href="#"
+								className="bg-lime-600 px-3 py-1 text-center text-xl font-medium text-white">
+								Lihat Lebih
+							</a>
+						</div>
+					)}
+
 					{/* mata pelajaran */}
-					<div className="flex h-[200px] w-[370px] flex-col justify-between bg-teal-500 pt-4">
-						<p className="px-3 text-5xl font-extrabold text-light">20</p>
-						<p className="px-3 text-2xl font-medium text-light">Mata Pelajaran</p>
-						<a
-							href="#"
-							className="bg-teal-600 px-3 py-1 text-center text-xl font-medium text-white">
-							Lihat Lebih
-						</a>
-					</div>
+					{/* visible only to administrators */}
+					{dashboardData.current.email === "admin@school.org" && (
+						<div className="flex h-[200px] w-[370px] flex-col justify-between bg-teal-500 pt-4">
+							<p className="px-3 text-5xl font-extrabold text-light">20</p>
+							<p className="px-3 text-2xl font-medium text-light">Mata Pelajaran</p>
+							<a
+								href="#"
+								className="bg-teal-600 px-3 py-1 text-center text-xl font-medium text-white">
+								Lihat Lebih
+							</a>
+						</div>
+					)}
 
 					{/* jadwal sekolah */}
 					<div className="flex h-[200px] w-[370px] flex-col justify-between bg-indigo-500 pt-4">
