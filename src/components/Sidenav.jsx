@@ -5,14 +5,16 @@ import { useUser } from "../context/user";
 import useGetDatabase from "../hooks/useGetDatabase";
 
 const Sidenav = () => {
+	// path
 	const { pathname } = useLocation();
-	let splitLocation = pathname.split("/");
-	splitLocation = splitLocation[1]; // pathname
+	const splitLocation = pathname.split("/");
+	const splitLocation1 = splitLocation[1];
+	const userPath = useRef("");
 
-	// set user data
+	// data from database
 	const userData = useRef({});
 
-	// get user
+	// current user
 	const { email } = useUser();
 
 	// get database
@@ -34,9 +36,16 @@ const Sidenav = () => {
 		getValueLater();
 	}, [email]);
 
+	if (userData.current.username) {
+		const username = userData.current.username;
+		userPath.current = username.replace(/\s/g, "");
+	}
+
 	return (
-		splitLocation !== "" &&
-		splitLocation !== "daftar" && (
+		splitLocation1 !== "" &&
+		splitLocation1 !== "daftar" &&
+		userData.current.username &&
+		splitLocation1 === userPath.current && (
 			<div className="relative">
 				<nav className="fixed left-0 flex h-screen w-[250px] flex-col justify-between bg-primary px-5 py-10 shadow-xl shadow-neutral-900/60">
 					<div className="flex flex-col gap-5">

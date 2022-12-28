@@ -11,6 +11,7 @@ import { toastNotif, ToastNotifContainer } from "../tools/reactToastify";
 const SignUp = () => {
 	const redirect = useNavigate();
 	const [isLoading, setIsLoading] = useState(false);
+	const userPath = useRef("");
 
 	// useForm
 	const {
@@ -20,8 +21,17 @@ const SignUp = () => {
 		formState: { errors },
 	} = useForm();
 
-	const password = useRef({});
+	// watching field
+	const password = useRef("");
+	const username = useRef("");
 	password.current = watch("password");
+	username.current = watch("username");
+
+	// set username for path
+	if (username.current) {
+		const usernameField = capitalLetter(username.current);
+		userPath.current = usernameField.replace(/\s/g, "");
+	}
 
 	// set database
 	const create = useCreateDatabase();
@@ -51,7 +61,7 @@ const SignUp = () => {
 		try {
 			await Daftar(email, password);
 			await additionalData(username, email);
-			redirect("/dashboard");
+			redirect(`/${userPath.current}/dashboard`);
 		} catch (error) {
 			const message = GetSignUpErrorMessage(error.code);
 			toastNotif("error", message);

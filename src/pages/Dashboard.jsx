@@ -1,12 +1,21 @@
 import { useRef } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../context/user";
 import useGetDatabase from "../hooks/useGetDatabase";
 
 const Dashboard = () => {
-	// set data
+	// path
+	const { pathname } = useLocation();
+	const splitLocation = pathname.split("/");
+	const splitLocation1 = splitLocation[1];
+	const userPath = useRef("");
+
+	const redirect = useNavigate();
+
+	// data from database
 	const dashboardData = useRef({});
 
-	// get user
+	// current user
 	const { email } = useUser();
 
 	// get database
@@ -23,9 +32,17 @@ const Dashboard = () => {
 				dashboardData.current = {
 					...dashboardData.current,
 					email: e.email,
+					username: e.username,
 				};
 			}
 		});
+	}
+
+	if (dashboardData.current.username) {
+		const username = dashboardData.current.username;
+		userPath.current = username.replace(/\s/g, "");
+
+		if (splitLocation1 !== userPath.current) redirect(`/${userPath.current}/dashboard`);
 	}
 
 	return (

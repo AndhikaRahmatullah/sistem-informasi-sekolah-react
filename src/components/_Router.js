@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import SignIn from "../pages/SignIn";
 import SignUp from "../pages/SignUp";
 import Dashboard from "../pages/Dashboard";
+import NotFound from "../pages/NotFound";
 import { useUser } from "../context/user";
 
 const _Router = () => {
@@ -11,7 +12,7 @@ const _Router = () => {
 		<Routes>
 			<Route
 				path="/"
-				element={ uid ? <Navigate to="/dashboard" /> : <SignIn /> }
+				element={ uid ? <Navigate to="/:username/dashboard" /> : <SignIn /> }
 			/>
 
 			<Route
@@ -20,8 +21,13 @@ const _Router = () => {
 			/>
 
 			<Route
-				path="/dashboard"
+				path="/:username/dashboard"
 				element={ !uid ? <Navigate to="/" /> : <Dashboard /> }
+			/>
+
+			<Route
+				path="*"
+				element={ <NotFound /> }
 			/>
 		</Routes>
 	);
