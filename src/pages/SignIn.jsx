@@ -11,10 +11,10 @@ const SignIn = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const userPath = useRef("");
 
-	// username from database
-	const usernameForPath = useRef("");
+	// username from users database
+	const usersDatabase = useRef("");
 
-	// get database
+	// get users database
 	const getPosts = useGetDatabase("users", true);
 	const { values } = getPosts;
 
@@ -37,11 +37,11 @@ const SignIn = () => {
 	if (values) {
 		values.map((e) => {
 			if (email.current === e.email) {
-				usernameForPath.current = e.username;
+				usersDatabase.current = e.username;
 			}
 		});
 	}
-	userPath.current = usernameForPath.current.replace(/\s/g, "");
+	userPath.current = usersDatabase.current.replace(/\s/g, "");
 
 	// submit
 	const onSubmit = async (formData) => {

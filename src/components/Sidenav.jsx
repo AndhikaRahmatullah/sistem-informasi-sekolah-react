@@ -11,13 +11,13 @@ const Sidenav = () => {
 	const splitLocation1 = splitLocation[1];
 	const userPath = useRef("");
 
-	// data from database
-	const userData = useRef({});
+	// data from users database
+	const usersDatabase = useRef({});
 
 	// current user
 	const { email } = useUser();
 
-	// get database
+	// get users database
 	const getPosts = useGetDatabase("users", false);
 	const { values, isLoading, getValueLater, exist, error } = getPosts;
 
@@ -25,7 +25,7 @@ const Sidenav = () => {
 	if (values && email) {
 		values.map((e) => {
 			if (email === e.email) {
-				userData.current = {
+				usersDatabase.current = {
 					username: e.username,
 				};
 			}
@@ -36,46 +36,52 @@ const Sidenav = () => {
 		getValueLater();
 	}, [email]);
 
-	if (userData.current.username) {
-		const username = userData.current.username;
+	// validation path
+	if (usersDatabase.current.username) {
+		const username = usersDatabase.current.username;
 		userPath.current = username.replace(/\s/g, "");
 	}
 
 	return (
 		splitLocation1 !== "" &&
 		splitLocation1 !== "daftar" &&
-		userData.current.username &&
+		usersDatabase.current.username &&
 		splitLocation1 === userPath.current && (
 			<div className="relative">
-				<nav className="fixed left-0 flex h-screen w-[250px] flex-col justify-between bg-primary px-5 py-10 shadow-xl shadow-neutral-900/60">
+				<nav className="fixed left-0 flex h-screen w-[250px] flex-col justify-between bg-dark shadow-xl shadow-neutral-900/60">
 					<div className="flex flex-col gap-5">
 						{/* user */}
-						<div className="">
-							<p className="text-center text-2xl font-bold text-light">{userData.current.username}</p>
+						<div className="bg-primary py-10 px-2">
+							<p className="text-center text-2xl font-bold text-light">{usersDatabase.current.username}</p>
 						</div>
 
-						<div className="mt-10 flex flex-col gap-3">
+						<div className="flex flex-col gap-3 px-5">
 							{/* dashboard */}
 							<Link
-								to="/dashboard"
+								to={`${userPath.current}/dashboard`}
 								className="text-xl font-medium uppercase text-light">
 								Dashboard
 							</Link>
 
-							{/* kelas */}
+							{/* siswa kelas */}
 							<Link
-								to="/dashboard"
+								to={`${userPath.current}/dashboard`}
 								className="text-xl font-medium uppercase text-light">
-								Kelas VI
+								Siswa kelas VI
 							</Link>
 						</div>
 					</div>
 
 					{/* signout */}
-					<div className="">
+					<div className="flex flex-col items-start gap-3 px-5 py-5">
+						<Link
+							to={`${userPath.current}/dashboard`}
+							className="text-xl font-medium uppercase text-light/50">
+							Profil
+						</Link>
 						<button
 							onClick={Keluar}
-							className="text-xl font-medium uppercase text-dark">
+							className="text-xl font-medium uppercase text-light/50">
 							Keluar
 						</button>
 					</div>

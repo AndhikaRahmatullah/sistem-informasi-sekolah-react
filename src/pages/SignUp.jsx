@@ -37,7 +37,7 @@ const SignUp = () => {
 	const create = useCreateDatabase();
 	const currentTime = new Date().toLocaleString();
 
-	// additional data for database
+	// additional data for users database
 	const additionalData = async (username, email) => {
 		const path = "/users";
 		const value = {

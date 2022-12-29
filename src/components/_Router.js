@@ -1,9 +1,10 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useUser } from "../context/user";
 import SignIn from "../pages/SignIn";
 import SignUp from "../pages/SignUp";
 import Dashboard from "../pages/Dashboard";
+import UserData from "../pages/UserData";
 import NotFound from "../pages/NotFound";
-import { useUser } from "../context/user";
 
 const _Router = () => {
 	const { uid } = useUser()
@@ -23,6 +24,11 @@ const _Router = () => {
 			<Route
 				path="/:username/dashboard"
 				element={ !uid ? <Navigate to="/" /> : <Dashboard /> }
+			/>
+
+			<Route
+				path="/:username/data-pengguna"
+				element={ !uid ? <Navigate to="/" /> : <UserData /> }
 			/>
 
 			<Route

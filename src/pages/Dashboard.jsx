@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useUser } from "../context/user";
 import useGetDatabase from "../hooks/useGetDatabase";
 
@@ -12,25 +12,25 @@ const Dashboard = () => {
 
 	const redirect = useNavigate();
 
-	// data from database
-	const dashboardData = useRef({});
+	// data from users database
+	const usersDatabase = useRef({});
 
 	// current user
 	const { email } = useUser();
 
-	// get database
+	// get users database
 	const getPosts = useGetDatabase("users", true);
 	const { values, isLoading, getValueLater, exist, error } = getPosts;
 
 	// validation user database
 	if (values) {
-		dashboardData.current = {
+		usersDatabase.current = {
 			totalUsers: values.length,
 		};
 		values.map((e) => {
 			if (email === e.email) {
-				dashboardData.current = {
-					...dashboardData.current,
+				usersDatabase.current = {
+					...usersDatabase.current,
 					email: e.email,
 					username: e.username,
 				};
@@ -38,8 +38,9 @@ const Dashboard = () => {
 		});
 	}
 
-	if (dashboardData.current.username) {
-		const username = dashboardData.current.username;
+	// validation path
+	if (usersDatabase.current.username) {
+		const username = usersDatabase.current.username;
 		userPath.current = username.replace(/\s/g, "");
 
 		if (splitLocation1 !== userPath.current) redirect(`/${userPath.current}/dashboard`);
@@ -88,21 +89,21 @@ const Dashboard = () => {
 
 					{/* data pengguna */}
 					{/* visible only to administrators */}
-					{dashboardData.current.email === "admin@school.org" && (
+					{usersDatabase.current.email === "admin@school.org" && (
 						<div className="flex h-[200px] w-[370px] flex-col justify-between bg-lime-500 pt-4">
-							<p className="px-3 text-5xl font-extrabold text-light">{dashboardData.current.totalUsers}</p>
+							<p className="px-3 text-5xl font-extrabold text-light">{usersDatabase.current.totalUsers}</p>
 							<p className="px-3 text-2xl font-medium text-light">Data Pengguna</p>
-							<a
-								href="#"
+							<Link
+								to={`/${userPath.current}/data-pengguna`}
 								className="bg-lime-600 px-3 py-1 text-center text-xl font-medium text-white">
 								Lihat Lebih
-							</a>
+							</Link>
 						</div>
 					)}
 
 					{/* mata pelajaran */}
 					{/* visible only to administrators */}
-					{dashboardData.current.email === "admin@school.org" && (
+					{usersDatabase.current.email === "admin@school.org" && (
 						<div className="flex h-[200px] w-[370px] flex-col justify-between bg-teal-500 pt-4">
 							<p className="px-3 text-5xl font-extrabold text-light">20</p>
 							<p className="px-3 text-2xl font-medium text-light">Mata Pelajaran</p>
