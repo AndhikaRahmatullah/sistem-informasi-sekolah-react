@@ -1,25 +1,24 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import FormError from "../components/FormError";
 import { SignIn as Masuk, GetSignInErrorMessage } from "../services/authentication";
 import useGetDatabase from "../hooks/useGetDatabase";
 import { useForm } from "react-hook-form";
+import FormError from "../components/FormError";
 import { toastNotif, ToastNotifContainer } from "../tools/reactToastify";
 import { SmallSpinnerLight } from "../tools/spinner";
 
 const SignIn = () => {
 	const [isLoading, setIsLoading] = useState(false);
-	const userPath = useRef("");
+
+	// initial for redirect path
+	const redirect = useNavigate();
 
 	// username from users database
-	const usersDatabase = useRef("");
+	const usersDatabase = useRef({});
 
 	// get users database
 	const getPosts = useGetDatabase("users", true);
 	const { values } = getPosts;
-
-	// initial for redirect path
-	const redirect = useNavigate();
 
 	// react hook form utils
 	const {
@@ -37,11 +36,13 @@ const SignIn = () => {
 	if (values) {
 		values.map((e) => {
 			if (email.current === e.email) {
-				usersDatabase.current = e.username;
+				usersDatabase.current = {
+					username: e.username,
+					accountID: e.accountID,
+				};
 			}
 		});
 	}
-	userPath.current = usersDatabase.current.replace(/\s/g, "");
 
 	// submit
 	const onSubmit = async (formData) => {
@@ -49,7 +50,7 @@ const SignIn = () => {
 		const { email, password } = formData;
 		try {
 			await Masuk(email, password);
-			redirect(`/${userPath.current}/dashboard`);
+			redirect(`/${usersDatabase.current.accountID}/dashboard`);
 		} catch (error) {
 			const message = GetSignInErrorMessage(error.code);
 			toastNotif("error", message);

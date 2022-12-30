@@ -19,7 +19,7 @@ const UserData = () => {
 	const { email } = useUser();
 
 	// visible only to administrators
-	if (email !== "admin@school.org") redirect(`/${userPath.current}/dashboard`);
+	if (email !== "admin@school.org") redirect(`/${usersDatabase.current.accountID}/dashboard`);
 
 	// get users database
 	const getPosts = useGetDatabase("users", true);
@@ -34,6 +34,7 @@ const UserData = () => {
 			if (email === e.email) {
 				usersDatabase.current = {
 					...usersDatabase.current,
+					accountID: e.accountID,
 					email: e.email,
 					username: e.username,
 				};
@@ -42,12 +43,7 @@ const UserData = () => {
 	}
 
 	// validation path
-	if (usersDatabase.current.username) {
-		const username = usersDatabase.current.username;
-		userPath.current = username.replace(/\s/g, "");
-
-		if (splitLocation1 !== userPath.current) redirect(`/${userPath.current}/data-pengguna`);
-	}
+	if (usersDatabase.current.accountID && splitLocation1 !== usersDatabase.current.accountID) redirect(`/${usersDatabase.current.accountID}/data-pengguna`);
 
 	return (
 		<div className="container py-10">

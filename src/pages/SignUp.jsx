@@ -7,11 +7,12 @@ import { useForm } from "react-hook-form";
 import { capitalLetter } from "../tools/capitalLetter";
 import { SmallSpinnerLight } from "../tools/spinner";
 import { toastNotif, ToastNotifContainer } from "../tools/reactToastify";
+import { uid } from "uid";
 
 const SignUp = () => {
 	const redirect = useNavigate();
 	const [isLoading, setIsLoading] = useState(false);
-	const userPath = useRef("");
+	const accountID = useRef(`ar${uid(32)}`);
 
 	// useForm
 	const {
@@ -27,21 +28,16 @@ const SignUp = () => {
 	password.current = watch("password");
 	username.current = watch("username");
 
-	// set username for path
-	if (username.current) {
-		const usernameField = capitalLetter(username.current);
-		userPath.current = usernameField.replace(/\s/g, "");
-	}
-
 	// set database
 	const create = useCreateDatabase();
 	const currentTime = new Date().toLocaleString();
 
 	// additional data for users database
 	const additionalData = async (username, email) => {
-		const path = "/users";
+		const path = `/users/${accountID.current}`;
 		const value = {
 			username: capitalLetter(username),
+			accountID: accountID.current,
 			nuptk: 0,
 			profileImage: "",
 			address: "",
@@ -51,7 +47,7 @@ const SignUp = () => {
 			email: email,
 			createdTime: currentTime,
 		};
-		await create.pushValue(path, value);
+		await create.setValue(path, value);
 	};
 
 	// submit
@@ -61,7 +57,7 @@ const SignUp = () => {
 		try {
 			await Daftar(email, password);
 			await additionalData(username, email);
-			redirect(`/${userPath.current}/dashboard`);
+			redirect(`/${accountID.current}/dashboard`);
 		} catch (error) {
 			const message = GetSignUpErrorMessage(error.code);
 			toastNotif("error", message);

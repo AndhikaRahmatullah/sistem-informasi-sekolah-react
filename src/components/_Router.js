@@ -4,6 +4,7 @@ import SignIn from "../pages/SignIn";
 import SignUp from "../pages/SignUp";
 import Dashboard from "../pages/Dashboard";
 import UserData from "../pages/UserData";
+import TeacherData from "../pages/TeacherData";
 import NotFound from "../pages/NotFound";
 
 const _Router = () => {
@@ -29,6 +30,11 @@ const _Router = () => {
 			<Route
 				path="/:username/data-pengguna"
 				element={ !uid ? <Navigate to="/" /> : <UserData /> }
+			/>
+
+			<Route
+				path="/:username/data-guru"
+				element={ !uid ? <Navigate to="/" /> : <TeacherData /> }
 			/>
 
 			<Route

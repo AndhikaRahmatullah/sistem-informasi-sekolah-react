@@ -8,7 +8,6 @@ const Dashboard = () => {
 	const { pathname } = useLocation();
 	const splitLocation = pathname.split("/");
 	const splitLocation1 = splitLocation[1];
-	const userPath = useRef("");
 
 	const redirect = useNavigate();
 
@@ -31,6 +30,7 @@ const Dashboard = () => {
 			if (email === e.email) {
 				usersDatabase.current = {
 					...usersDatabase.current,
+					accountID: e.accountID,
 					email: e.email,
 					username: e.username,
 				};
@@ -39,12 +39,7 @@ const Dashboard = () => {
 	}
 
 	// validation path
-	if (usersDatabase.current.username) {
-		const username = usersDatabase.current.username;
-		userPath.current = username.replace(/\s/g, "");
-
-		if (splitLocation1 !== userPath.current) redirect(`/${userPath.current}/dashboard`);
-	}
+	if (usersDatabase.current.accountID && splitLocation1 !== usersDatabase.current.accountID) redirect(`/${usersDatabase.current.accountID}/dashboard`);
 
 	return (
 		<div className="container py-10">
@@ -66,15 +61,18 @@ const Dashboard = () => {
 					</div>
 
 					{/* data guru */}
-					<div className="flex h-[200px] w-[370px] flex-col justify-between bg-red-500 pt-4">
-						<p className="px-3 text-5xl font-extrabold text-light">12</p>
-						<p className="px-3 text-2xl font-medium text-light">Data Guru</p>
-						<a
-							href="#"
-							className="bg-red-600 px-3 py-1 text-center text-xl font-medium text-white">
-							Lihat Lebih
-						</a>
-					</div>
+					{/* visible only to administrators */}
+					{usersDatabase.current.email === "admin@school.org" && (
+						<div className="flex h-[200px] w-[370px] flex-col justify-between bg-red-500 pt-4">
+							<p className="px-3 text-5xl font-extrabold text-light">12</p>
+							<p className="px-3 text-2xl font-medium text-light">Data Guru</p>
+							<Link
+								to={`/${usersDatabase.current.accountID}/data-guru`}
+								className="bg-red-600 px-3 py-1 text-center text-xl font-medium text-white">
+								Lihat Lebih
+							</Link>
+						</div>
+					)}
 
 					{/* data siswa */}
 					<div className="flex h-[200px] w-[370px] flex-col justify-between bg-green-500 pt-4">
@@ -94,7 +92,7 @@ const Dashboard = () => {
 							<p className="px-3 text-5xl font-extrabold text-light">{usersDatabase.current.totalUsers}</p>
 							<p className="px-3 text-2xl font-medium text-light">Data Pengguna</p>
 							<Link
-								to={`/${userPath.current}/data-pengguna`}
+								to={`/${usersDatabase.current.accountID}/data-pengguna`}
 								className="bg-lime-600 px-3 py-1 text-center text-xl font-medium text-white">
 								Lihat Lebih
 							</Link>

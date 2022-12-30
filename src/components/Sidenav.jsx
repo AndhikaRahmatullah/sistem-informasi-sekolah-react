@@ -26,6 +26,7 @@ const Sidenav = () => {
 		values.map((e) => {
 			if (email === e.email) {
 				usersDatabase.current = {
+					accountID: e.accountID,
 					username: e.username,
 				};
 			}
@@ -45,8 +46,8 @@ const Sidenav = () => {
 	return (
 		splitLocation1 !== "" &&
 		splitLocation1 !== "daftar" &&
-		usersDatabase.current.username &&
-		splitLocation1 === userPath.current && (
+		usersDatabase.current.accountID &&
+		splitLocation1 === usersDatabase.current.accountID && (
 			<div className="relative">
 				<nav className="fixed left-0 flex h-screen w-[250px] flex-col justify-between bg-dark shadow-xl shadow-neutral-900/60">
 					<div className="flex flex-col gap-5">
@@ -58,27 +59,28 @@ const Sidenav = () => {
 						<div className="flex flex-col gap-3 px-5">
 							{/* dashboard */}
 							<Link
-								to={`${userPath.current}/dashboard`}
+								to={`${usersDatabase.current.accountID}/dashboard`}
 								className="text-xl font-medium uppercase text-light">
 								Dashboard
 							</Link>
 
 							{/* siswa kelas */}
 							<Link
-								to={`${userPath.current}/dashboard`}
+								to={`${usersDatabase.current.accountID}/dashboard`}
 								className="text-xl font-medium uppercase text-light">
 								Siswa kelas VI
 							</Link>
 						</div>
 					</div>
 
-					{/* signout */}
-					<div className="flex flex-col items-start gap-3 px-5 py-5">
+					<div className="flex flex-col items-start gap-3 border-t-2 border-light/50 px-5 py-5">
+						{/* profile */}
 						<Link
-							to={`${userPath.current}/dashboard`}
+							to={`${usersDatabase.current.accountID}/dashboard`}
 							className="text-xl font-medium uppercase text-light/50">
 							Profil
 						</Link>
+						{/* signout */}
 						<button
 							onClick={Keluar}
 							className="text-xl font-medium uppercase text-light/50">
