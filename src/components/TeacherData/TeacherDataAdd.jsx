@@ -4,9 +4,10 @@ import { useForm } from "react-hook-form";
 import FormError from "../../components/FormError";
 import { toastNotif, ToastNotifContainer } from "../../tools/reactToastify";
 
-const TeacherDataEdit = ({ accountID, fullName, nuptk, position, rerender }) => {
+const TeacherDataAdd = ({ database, rerender }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const update = useUpdateDatabase();
+	const existsUsersOption = [];
 	const existsPositionOption = ["Admin", "Bimbingan Konseling", "Wali Kelas I", "Wali Kelas II", "Wali Kelas III", "Wali Kelas IV", "Wali Kelas V", "Wali Kelas VI"];
 
 	// react hook form utils
@@ -17,24 +18,44 @@ const TeacherDataEdit = ({ accountID, fullName, nuptk, position, rerender }) => 
 		formState: { errors },
 	} = useForm();
 
-	const updateDocPost = async (nuptk, position) => {
-		const path = `/users/${accountID}`;
-		const value = {
-			nuptk: nuptk,
-			position: position,
-		};
+	// data from users database
+	const usersDatabase = [];
 
+	const addData = async (nuptk, fullName, position) => {
+		let path = "";
+		let value = {};
+		usersDatabase.map((i) => {
+			if (i.username === fullName) {
+				path = `/users/${i.accountID}`;
+				value = {
+					nuptk: nuptk,
+					position: position,
+				};
+			}
+		});
 		await update.updateDoc(path, value);
 	};
+
+	// validation exists users for select option
+	if (database) {
+		database.map((i) => {
+			if (!i.position) {
+				existsUsersOption.push(i.username);
+				usersDatabase.push({ accountID: i.accountID, username: i.username });
+			}
+		});
+	}
+
+	// console.log(usersDatabase);
 
 	// submit
 	const onSubmit = async (formData) => {
 		setIsLoading(true);
-		const { nuptk, position } = formData;
+		const { nuptk, fullName, position } = formData;
 		try {
-			await updateDocPost(nuptk, position);
+			await addData(nuptk, fullName, position);
 			rerender();
-			toastNotif("success", "Data berhasil diperbarui.");
+			toastNotif("success", "Data berhasil ditambahkan.");
 		} catch (error) {
 			return null;
 		}
@@ -47,11 +68,11 @@ const TeacherDataEdit = ({ accountID, fullName, nuptk, position, rerender }) => 
 				<button
 					type="button"
 					data-bs-toggle="modal"
-					data-bs-target={`#${accountID}`}>
+					data-bs-target={`#editdata`}>
 					<img
-						src={require("../../assets/icons/edit.png")}
-						alt="ubah"
-						className="w-[30px] grayscale transition-all duration-300 hover:grayscale-0"
+						src={require("../../assets/icons/add.png")}
+						alt="tambah"
+						className="w-[50px] transition-all duration-300 hover:grayscale"
 					/>
 				</button>
 			</div>
@@ -59,7 +80,7 @@ const TeacherDataEdit = ({ accountID, fullName, nuptk, position, rerender }) => 
 			{/* modal */}
 			<div
 				className="modal fade fixed top-0 left-0 hidden h-full w-full overflow-y-auto overflow-x-hidden outline-none"
-				id={accountID}
+				id="editdata"
 				data-bs-backdrop="static"
 				data-bs-keyboard="false"
 				tabIndex="-1"
@@ -72,7 +93,7 @@ const TeacherDataEdit = ({ accountID, fullName, nuptk, position, rerender }) => 
 							<h5
 								className="text-xl font-medium leading-normal text-gray-800"
 								id="exampleModalLabel">
-								Ubah Data {fullName}
+								Tambah Data
 							</h5>
 
 							{/* close button */}
@@ -96,18 +117,40 @@ const TeacherDataEdit = ({ accountID, fullName, nuptk, position, rerender }) => 
 									<input
 										type="number"
 										name="nuptk"
-										placeholder={nuptk}
+										placeholder="Masukan NUPTK"
 										{...register("nuptk", { required: true })}
 										className="form-input block w-full bg-transparent text-lg font-medium tracking-wide"
 									/>
 									<FormError error={errors.nuptk} />
 								</div>
 
-								{/* fullName - disabled*/}
+								{/* fullname */}
 								<div className="mb-5">
-									<p className="text-lg font-medium">Nama Lengkap</p>
-									<p className="form-input block w-full bg-dark/50 text-lg font-medium tracking-wide">{fullName}</p>
-									<span className="text-sm font-medium text-dark/80">Nama lengkap hanya dapat diubah oleh akun pengguna.</span>
+									<label
+										htmlFor="fullName"
+										className="text-lg font-medium">
+										Nama Lengkap
+									</label>
+									<select
+										name="fullName"
+										{...register("fullName", { required: true })}
+										className="form-select w-full bg-transparent text-lg font-medium tracking-wide">
+										<option
+											hidden
+											value="">
+											Masukan Nama Lengkap
+										</option>
+										{existsUsersOption.map((i) => {
+											return (
+												<option
+													value={i}
+													key={i}>
+													{i}
+												</option>
+											);
+										})}
+									</select>
+									<FormError error={errors.fullName} />
 								</div>
 
 								{/* position */}
@@ -120,7 +163,7 @@ const TeacherDataEdit = ({ accountID, fullName, nuptk, position, rerender }) => 
 									<select
 										name="position"
 										{...register("position", { required: true })}
-										className="form-select block w-full bg-transparent text-lg font-medium tracking-wide">
+										className="form-select w-full bg-transparent text-lg font-medium tracking-wide">
 										<option
 											hidden
 											value="">
@@ -151,9 +194,9 @@ const TeacherDataEdit = ({ accountID, fullName, nuptk, position, rerender }) => 
 
 									<button
 										type="submit"
-										disabled={isLoading}
+										// disabled={isLoading}
 										className="ml-1 inline-block rounded bg-blue-600 px-6 py-2.5 text-xs font-medium uppercase leading-tight text-white shadow-md transition duration-150 ease-in-out hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg">
-										Ubah
+										Buat
 									</button>
 								</div>
 							</form>
@@ -166,4 +209,4 @@ const TeacherDataEdit = ({ accountID, fullName, nuptk, position, rerender }) => 
 	);
 };
 
-export default TeacherDataEdit;
+export default TeacherDataAdd;

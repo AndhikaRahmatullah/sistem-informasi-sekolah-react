@@ -18,7 +18,7 @@ const FormError = ({ error }) => {
 	const { type } = error;
 	const message = GetErrorMessage(type);
 
-	return <span className="text-xs text-sky-600">{message}</span>;
+	return <span className="text-sm font-medium text-sky-600">{message}</span>;
 };
 
 export default FormError;

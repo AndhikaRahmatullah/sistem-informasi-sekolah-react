@@ -3,7 +3,7 @@ import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useUser } from "../context/user";
 import useGetDatabase from "../hooks/useGetDatabase";
 import TeacherDataEdit from "../components/TeacherData/TeacherDataEdit";
-import { uid } from "uid";
+import TeacherDataAdd from "../components/TeacherData/TeacherDataAdd";
 
 const TeacherData = () => {
 	// path
@@ -17,8 +17,8 @@ const TeacherData = () => {
 	// data from users database
 	const usersDatabase = useRef({});
 
-	// data from teachersDatabase
-	const teachersDatabase = useRef({});
+	// data for position exists
+	const positionExists = [];
 
 	// current user
 	const { email } = useUser();
@@ -30,16 +30,16 @@ const TeacherData = () => {
 	const getPosts = useGetDatabase("users", true);
 	const { values, isLoading, getValueLater, exist, error } = getPosts;
 
-	// // get teachers database
-	// const getPostsTeachers = useGetDatabase("users", true);
-	// const { values, isLoading, getValueLater, exist, error } = getPostsTeachers;
-
 	// validation user database
 	if (values) {
 		usersDatabase.current = {
 			totalUsers: values.length,
 		};
 		values.map((e) => {
+			if (e.position) {
+				positionExists.push(e.username);
+			}
+
 			if (email === e.email) {
 				usersDatabase.current = {
 					...usersDatabase.current,
@@ -52,12 +52,7 @@ const TeacherData = () => {
 	}
 
 	// validation path
-	if (usersDatabase.current.accountID) {
-		const accountID = usersDatabase.current.accountID;
-		userPath.current = accountID.replace(/\s/g, "");
-
-		if (splitLocation1 !== userPath.current) redirect(`/${userPath.current}/data-guru`);
-	}
+	if (usersDatabase.current.accountID && splitLocation1 !== usersDatabase.current.accountID) redirect(`/${usersDatabase.current.accountID}/data-guru`);
 
 	return (
 		<div className="container py-10">
@@ -69,16 +64,14 @@ const TeacherData = () => {
 					<div className="flex items-center justify-between">
 						{/* total users */}
 						<p className="text-2xl font-bold text-dark">
-							Total Guru / Tenaga Pengajar : <span className="text-3xl text-dark/50">{usersDatabase.current.totalUsers}</span>
+							Total Guru / Tenaga Pengajar : <span className="text-3xl text-dark/50">{positionExists.length}</span>
 						</p>
+
 						{/* add teacher */}
-						<button className="">
-							<img
-								src={require("../assets/icons/add.png")}
-								alt="tambah"
-								className="w-[50px] transition-all duration-300 hover:grayscale"
-							/>
-						</button>
+						<TeacherDataAdd
+							database={values}
+							rerender={getValueLater}
+						/>
 					</div>
 
 					{/* table data */}
@@ -111,22 +104,24 @@ const TeacherData = () => {
 							{values &&
 								values.map((i) => {
 									return (
-										<tr
-											className="border-b border-neutral-300 bg-white"
-											key={i.email}>
-											<td className="whitespace-nowrap border-l border-neutral-300 px-5 py-4 text-lg tracking-wide text-dark">{i.nuptk}</td>
-											<td className="whitespace-nowrap border-x border-neutral-300 px-5 py-4 text-lg tracking-wide text-dark">{i.username}</td>
-											<td className="whitespace-nowrap border-r border-neutral-300 px-5 py-4 text-lg tracking-wide text-dark">{i.position}</td>
-											<td className="whitespace-nowrap border-r border-neutral-300 px-5 py-4">
-												<TeacherDataEdit
-													id={i.accountID}
-													email={i.email}
-													fullName={i.username}
-													nuptk={i.nuptk}
-													position={i.position}
-												/>
-											</td>
-										</tr>
+										i.position && (
+											<tr
+												className="border-b border-neutral-300 bg-white"
+												key={i.email}>
+												<td className="whitespace-nowrap border-l border-neutral-300 px-5 py-4 text-lg tracking-wide text-dark">{i.nuptk}</td>
+												<td className="whitespace-nowrap border-x border-neutral-300 px-5 py-4 text-lg tracking-wide text-dark">{i.username}</td>
+												<td className="whitespace-nowrap border-r border-neutral-300 px-5 py-4 text-lg tracking-wide text-dark">{i.position}</td>
+												<td className="whitespace-nowrap border-r border-neutral-300 px-5 py-4">
+													<TeacherDataEdit
+														accountID={i.accountID}
+														fullName={i.username}
+														nuptk={i.nuptk}
+														position={i.position}
+														rerender={getValueLater}
+													/>
+												</td>
+											</tr>
+										)
 									);
 								})}
 						</tbody>

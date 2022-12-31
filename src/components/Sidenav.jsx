@@ -28,6 +28,7 @@ const Sidenav = () => {
 				usersDatabase.current = {
 					accountID: e.accountID,
 					username: e.username,
+					position: e.position,
 				};
 			}
 		});
@@ -53,7 +54,9 @@ const Sidenav = () => {
 					<div className="flex flex-col gap-5">
 						{/* user */}
 						<div className="bg-primary py-10 px-2">
-							<p className="text-center text-2xl font-bold text-light">{usersDatabase.current.username}</p>
+							<p className="text-center text-2xl font-bold text-light">
+								{usersDatabase.current.username} <span className="block text-base font-normal">{usersDatabase.current.position}</span>
+							</p>
 						</div>
 
 						<div className="flex flex-col gap-3 px-5">

@@ -14,6 +14,9 @@ const Dashboard = () => {
 	// data from users database
 	const usersDatabase = useRef({});
 
+	// data for position exists
+	const positionExists = [];
+
 	// current user
 	const { email } = useUser();
 
@@ -27,6 +30,10 @@ const Dashboard = () => {
 			totalUsers: values.length,
 		};
 		values.map((e) => {
+			if (e.position) {
+				positionExists.push(e.username);
+			}
+
 			if (email === e.email) {
 				usersDatabase.current = {
 					...usersDatabase.current,
@@ -64,7 +71,7 @@ const Dashboard = () => {
 					{/* visible only to administrators */}
 					{usersDatabase.current.email === "admin@school.org" && (
 						<div className="flex h-[200px] w-[370px] flex-col justify-between bg-red-500 pt-4">
-							<p className="px-3 text-5xl font-extrabold text-light">12</p>
+							<p className="px-3 text-5xl font-extrabold text-light">{positionExists.length}</p>
 							<p className="px-3 text-2xl font-medium text-light">Data Guru</p>
 							<Link
 								to={`/${usersDatabase.current.accountID}/data-guru`}
