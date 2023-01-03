@@ -79,7 +79,7 @@ const Sidenav = () => {
 					<div className="flex flex-col items-start gap-3 border-t-2 border-light/50 px-5 py-5">
 						{/* profile */}
 						<Link
-							to={`${usersDatabase.current.accountID}/dashboard`}
+							to={`${usersDatabase.current.accountID}/profil`}
 							className="text-xl font-medium uppercase text-light/50">
 							Profil
 						</Link>

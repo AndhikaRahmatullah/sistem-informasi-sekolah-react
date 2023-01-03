@@ -5,6 +5,7 @@ import SignUp from "../pages/SignUp";
 import Dashboard from "../pages/Dashboard";
 import UserData from "../pages/UserData";
 import TeacherData from "../pages/TeacherData";
+import Profile from "../pages/Profile";
 import NotFound from "../pages/NotFound";
 
 const _Router = () => {
@@ -35,6 +36,11 @@ const _Router = () => {
 			<Route
 				path="/:username/data-guru"
 				element={ !uid ? <Navigate to="/" /> : <TeacherData /> }
+			/>
+
+			<Route
+				path="/:username/profil"
+				element={ !uid ? <Navigate to="/" /> : <Profile /> }
 			/>
 
 			<Route
