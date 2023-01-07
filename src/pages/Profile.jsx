@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useUser } from "../context/user";
 import useGetDatabase from "../hooks/useGetDatabase";
+import ProfileEdit from "../components/Profile/ProfileEdit";
 
 const Profile = () => {
 	// path
@@ -45,8 +46,6 @@ const Profile = () => {
 	// validation path
 	if (usersDatabase.current.accountID && splitLocation1 !== usersDatabase.current.accountID) redirect(`/${usersDatabase.current.accountID}/profil`);
 
-	const url = "https://tse3.mm.bing.net/th?id=OIP.k0ap2nMOysPb5Rcg6um4vwHaHa&pid=Api&P=0";
-
 	return (
 		<div className="container py-10">
 			<div className="ml-[250px]">
@@ -58,7 +57,7 @@ const Profile = () => {
 					{/* profile image */}
 					<div className="mb-10 flex flex-col items-center justify-between gap-3 text-dark">
 						<div
-							style={{ backgroundImage: `url(${url})` }}
+							style={{ backgroundImage: `url(${usersDatabase.current.profileImage})` }}
 							className="h-[500px] w-[500px] rounded-full border-[3px] border-dark/50 bg-cover bg-center"></div>
 						<p className="text-3xl font-bold tracking-wider">{usersDatabase.current.username}</p>
 					</div>
@@ -115,7 +114,17 @@ const Profile = () => {
 
 					{/* edit data */}
 					<div className="mt-10 flex justify-center">
-						<button className="rounded-lg bg-primary p-2 text-xl font-medium tracking-wide text-light">Ubah Profil</button>
+						<ProfileEdit
+							accountID={usersDatabase.current.accountID}
+							fullName={usersDatabase.current.username}
+							nuptk={usersDatabase.current.nuptk}
+							position={usersDatabase.current.position}
+							dateOfBirth={usersDatabase.current.dateOfBirth}
+							placeOfBirth={usersDatabase.current.placeOfBirth}
+							address={usersDatabase.current.address}
+							profileImage={usersDatabase.current.profileImage}
+							rerender={getValueLater}
+						/>
 					</div>
 				</div>
 			</div>
